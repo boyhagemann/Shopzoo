@@ -18,6 +18,8 @@ class CreateProductTable extends Migration {
 			$table->timestamps();
 
 			$table->string('title');
+			$table->text('description');
+			$table->string('uri');
 
 		});
 	}

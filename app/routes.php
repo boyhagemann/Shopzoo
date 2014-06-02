@@ -14,29 +14,42 @@
 App::singleton('TradeTrackerImporter', function() {
 
 	$client = new SoapClient('http://ws.tradetracker.com/soap/affiliate?wsdl');
-	$client->authenticate(20367, '3a311fd3d68428c72d22576bb158848f95e1e0b5');
-
-//	$response = $client->getAffiliateSites();
-//	$response = $client->getCampaigns(48216, array(
-//		'assignmentStatus' => 'accepted',
-//	));
-//	$response = $client->getFeedProducts(48216, array(
-//		'campaignID' => 2626,
-//	));
+	$client->authenticate($_ENV['TRADETRACKER_USER'], $_ENV['TRADETRACKER_KEY']);
 
 	return new TradeTrackerImporter($client);
 });
 
 $importer = App::make('TradeTrackerImporter');
 
-// Afvalemmershop
-$importer->import(2626, function($data) {
+// Get the info from all campaigns with the Shopzoo account on TradeTracker
+$importer->info(function(TradeTrackerImporter $importer) {
 
-	return Product::create(array(
-		'title' => $data->name,
-		'description' => 'test',
-		'uri' => 'test',
+	$campaigns = $importer->getClient()->getCampaigns(48216, array(
+		'assignmentStatus' => 'accepted',
 	));
+
+	foreach($campaigns as $campaign) {
+		$importer->setInfo($campaign->ID, $campaign->info);
+	}
+
+});
+
+// Afvalemmershop
+$importer->import(2626, function($data, $info) {
+
+	$percent = $info->commission->saleCommissionVariable;
+	$value = $data->price * ($percent / 100);
+
+	return array(
+		'uid' 			=> 'tt_' . $data->identifier,
+		'task_type_id' 	=> 2,
+		'provider_id' 	=> 2,
+		'title' 		=> $data->name,
+		'description' 	=> $data->description,
+		'uri' 			=> $data->productURL,
+		'value' 		=> $value,
+		'currency' 		=> 'EUR',
+	);
 
 });
 
@@ -51,26 +64,28 @@ $importer->feed(function($campaignID) {
 		// Get all products with this campaign
 		$products = $importer->getClient()->getFeedProducts(48216, compact('campaignID'));
 
+		$collected = array();
+
 		// Handle each product
 		foreach($products as $product) {
 
 			// Call the function that handles the product
-			$products[] = $importer->process($campaignID, $product);
+			$collected[] = $importer->process($campaignID, $product);
 		}
+
+		// After all product data is collected, do a batch api call
+		$client = new GuzzleHttp\Client;
+		$client->post('http://taskreward.app/api/tasks', array(
+			'body' => array(
+				'tasks' => $collected,
+			),
+		));
 
 		$job->delete();
 	});
 
 });
 
-Product::saved(function(Product $product) {
-
-	$client = new GuzzleHttp\Client;
-	$client->post('http://taskreward.app:8000/api/tasks', array(
-		'body' => $product->toArray(),
-	));
-
-});
 
 
 

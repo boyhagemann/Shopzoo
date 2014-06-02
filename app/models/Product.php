@@ -9,6 +9,6 @@ class Product extends Eloquent {
 	 */
 	protected $table = 'products';
 
-	protected $fillable = array('title');
+	protected $fillable = array('uid', 'title', 'description', 'uri');
 
 }

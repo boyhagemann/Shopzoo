@@ -18,9 +18,14 @@ class TradeTrackerImporter
 	protected $client;
 
 	/**
-	 * @var integer
+	 * @var array
 	 */
-	protected $running;
+	protected $info = array();
+
+	/**
+	 * @var Closure
+	 */
+	protected $infoCallback;
 
 	/**
 	 * @param SoapClient $client
@@ -38,6 +43,37 @@ class TradeTrackerImporter
 	public function getClient()
 	{
 		return $this->client;
+	}
+
+	/**
+	 * @param $id
+	 * @return mixed|null
+	 */
+	public function getInfo($id)
+	{
+		if(!$this->info) {
+			call_user_func_array($this->infoCallback, array($this));
+		}
+
+		return $this->info[$id];
+	}
+
+	/**
+	 * @param $id
+	 * @param $info
+	 */
+	public function setInfo($id, $info)
+	{
+		$this->info[$id] = $info;
+	}
+
+	/**
+	 * @param $id
+	 * @param $info
+	 */
+	public function info(Closure $callback)
+	{
+		$this->infoCallback = $callback;
 	}
 
 	/**
@@ -73,7 +109,8 @@ class TradeTrackerImporter
 	public function process($id, $data)
 	{
 		$import = $this->imports[$id];
-		call_user_func_array($import, array($data));
+		$info = $this->getInfo($id);
+		return call_user_func_array($import, array($data, $info));
 	}
 
 	/**
