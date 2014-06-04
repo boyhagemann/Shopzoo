@@ -45,9 +45,9 @@ $importer->import(2626, function($data, $info) {
 		'task_type_id' 	=> 2,
 		'provider_id' 	=> 2,
 		'title' 		=> $data->name,
-		'description' 	=> $data->description,
+		'description' 	=> $data->description . PHP_EOL . $data->additional[10]->value,
 		'uri' 			=> $data->productURL,
-		'image' 		=> $data->imageURL,
+		'image' 		=> $data->additional[9]->value, // imageURL_large
 		'value' 		=> $value,
 		'currency' 		=> 'EUR',
 	);
