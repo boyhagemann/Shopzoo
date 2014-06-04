@@ -47,6 +47,7 @@ $importer->import(2626, function($data, $info) {
 		'title' 		=> $data->name,
 		'description' 	=> $data->description,
 		'uri' 			=> $data->productURL,
+		'image' 		=> $data->imageURL,
 		'value' 		=> $value,
 		'currency' 		=> 'EUR',
 	);
