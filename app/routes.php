@@ -42,12 +42,51 @@ $importer->import(2626, function($data, $info) {
 
 	return array(
 		'uid' 			=> 'tt_' . $data->identifier,
-		'task_type_id' 	=> 2,
+		'action' 		=> 'sell',
 		'provider_id' 	=> 2,
 		'title' 		=> $data->name,
 		'description' 	=> $data->description . PHP_EOL . $data->additional[10]->value,
 		'uri' 			=> $data->productURL,
-		'image' 		=> $data->additional[9]->value, // imageURL_large
+		'image' 		=> $data->imageURL,
+		'value' 		=> $value,
+		'currency' 		=> 'EUR',
+	);
+
+});
+
+// Bestelkado.nl
+$importer->import(867, function($data, $info) {
+
+	$percent = $info->commission->saleCommissionVariable;
+	$value = $data->price * ($percent / 100);
+
+	return array(
+		'uid' 			=> 'tt_' . $data->identifier,
+		'action' 		=> 'sell',
+		'provider_id' 	=> 2,
+		'title' 		=> $data->name,
+		'description' 	=> $data->description,
+		'uri' 			=> $data->productURL,
+		'image' 		=> $data->imageURL,
+		'value' 		=> $value,
+		'currency' 		=> 'EUR',
+	);
+
+});
+
+// Algebeld.nl
+$importer->import(1078, function($data, $info) {
+
+	$value = $info->commission->saleCommissionFixed;
+
+	return array(
+		'uid' 			=> 'tt_' . $data->identifier,
+		'action' 		=> 'sell',
+		'provider_id' 	=> 2,
+		'title' 		=> $data->name,
+		'description' 	=> $data->description,
+		'uri' 			=> $data->productURL,
+		'image' 		=> $data->imageURL,
 		'value' 		=> $value,
 		'currency' 		=> 'EUR',
 	);
@@ -75,12 +114,17 @@ $importer->feed(function($campaignID) {
 		}
 
 		// After all product data is collected, do a batch api call
-		$client = new GuzzleHttp\Client;
-		$client->post('http://taskreward.app/api/tasks', array(
-			'body' => array(
-				'tasks' => $collected,
-			),
-		));
+
+		foreach(array_chunk($collected, 1000) as $splitted) {
+
+			$client = new GuzzleHttp\Client;
+			$client->post('http://taskreward.app/api/tasks', array(
+				'body' => array(
+					'tasks' => $splitted,
+				),
+			));
+
+		}
 
 		$job->delete();
 	});
