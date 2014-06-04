@@ -6,7 +6,8 @@
 	"require": {
 		"laravel/framework": "4.2.*",
 		"pda/pheanstalk": "dev-master",
-		"guzzlehttp/guzzle": "4.*"
+		"guzzlehttp/guzzle": "4.*",
+		"boyhagemann/scrape": "dev-master"
 	},
 	"autoload": {
 		"classmap": [

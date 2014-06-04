@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\DomCrawler\Crawler;
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -33,7 +35,7 @@ $importer->info(function(TradeTrackerImporter $importer) {
 	}
 
 });
-//
+
 //// Afvalemmershop
 //$importer->import(2626, function($data, $info) {
 //
@@ -77,31 +79,79 @@ $importer->info(function(TradeTrackerImporter $importer) {
 // Algebeld.nl
 $importer->import(1078, function($data, $info) {
 
-	$value = $info->commission->saleCommissionFixed;
-	$title = $data->name;
+	Queue::push(function($job) use ($data, $info)
+	{
+		$value = $info->commission->saleCommissionFixed;
 
-	foreach($data->additional as $additional) {
+		$row = array(
+			'uid' 			=> 'tt_' . $data->identifier,
+			'action' 		=> 'sell',
+			'provider_id' 	=> 2,
+			'title' 		=> $data->name,
+			'description' 	=> $data->description,
+			'uri' 			=> $data->productURL,
+			'image' 		=> $data->imageURL,
+			'value' 		=> $value,
+			'currency' 		=> 'EUR',
+		);
 
-		switch( (string) $additional->name) {
+		var_dump($row);
 
-			case 'brand':
-				$title = $additional->value . ' ' . $title;
-				break;
+		foreach($data->additional as $additional) {
 
+			switch( (string) $additional->name) {
+
+				case 'brand':
+					$row['title'] = (string) $additional->value . ' ' . $row['title'];
+					break;
+
+			}
 		}
-	}
 
-	return array(
-		'uid' 			=> 'tt_' . $data->identifier,
-		'action' 		=> 'sell',
-		'provider_id' 	=> 2,
-		'title' 		=> $title,
-		'description' 	=> $data->description,
-		'uri' 			=> $data->productURL,
-		'image' 		=> $data->imageURL,
-		'value' 		=> $value,
-		'currency' 		=> 'EUR',
-	);
+
+		Scraper::add('google-shopping-search', function(Crawler $crawler) {
+
+			$crawler->filter('h3.r a')->each(function($node) {
+
+				$url = $node->attr('href');
+
+				if(strpos($url, '/aclk?sa=') === 0) {
+					return;
+				}
+
+				$url = 'https://www.google.nl' . $url;
+
+				Scraper::scrape('google-shopping-product', $url);
+			});
+
+		});
+
+		Scraper::add('google-shopping-product', function(Crawler $crawler) use (&$row) {
+
+			$crawler->filter('#product-description-full')->each(function($node) {
+				$description = trim($node->text());
+
+				$description ? $row['description'] = $description : null;
+			});
+
+		});
+
+		$url = sprintf('https://www.google.nl/search?q=%s&gbv=1&tbm=shop', urlencode($row['title']));
+
+		Scraper::scrape('google-shopping-search', $url);
+
+		var_dump($row);
+
+		$client = new GuzzleHttp\Client;
+		$response = $client->post('http://taskreward.app/api/tasks', array(
+			'body' => $row,
+		));
+
+		var_dump($response);
+
+		$job->delete();
+
+	});
 
 });
 
@@ -119,25 +169,33 @@ $importer->feed(function($campaignID) {
 		$collected = array();
 
 		// Handle each product
+		$i = 0;
 		foreach($products as $product) {
 
+			if($i == 5) {
+				break;
+			}
+
 			// Call the function that handles the product
-			$collected[] = $importer->process($campaignID, $product);
+//			$collected[] = $importer->process($campaignID, $product);
+			$importer->process($campaignID, $product);
+
+			$i++;
 		}
 
 		// After all product data is collected, do a batch api call
 
-		foreach(array_chunk($collected, 1000) as $splitted) {
-
-			$client = new GuzzleHttp\Client;
-			$client->post('http://taskreward.app/api/tasks', array(
-				'body' => array(
-					'tasks' => $splitted,
-				),
-			));
-
-		}
-
+//		foreach(array_chunk($collected, 1000) as $splitted) {
+//
+//			$client = new GuzzleHttp\Client;
+//			$client->post('http://taskreward.app/api/tasks', array(
+//				'body' => array(
+//					'tasks' => $splitted,
+//				),
+//			));
+//
+//		}
+//
 		$job->delete();
 	});
 
