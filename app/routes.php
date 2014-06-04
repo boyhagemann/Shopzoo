@@ -33,57 +33,69 @@ $importer->info(function(TradeTrackerImporter $importer) {
 	}
 
 });
-
-// Afvalemmershop
-$importer->import(2626, function($data, $info) {
-
-	$percent = $info->commission->saleCommissionVariable;
-	$value = $data->price * ($percent / 100);
-
-	return array(
-		'uid' 			=> 'tt_' . $data->identifier,
-		'action' 		=> 'sell',
-		'provider_id' 	=> 2,
-		'title' 		=> $data->name,
-		'description' 	=> $data->description . PHP_EOL . $data->additional[10]->value,
-		'uri' 			=> $data->productURL,
-		'image' 		=> $data->imageURL,
-		'value' 		=> $value,
-		'currency' 		=> 'EUR',
-	);
-
-});
-
-// Bestelkado.nl
-$importer->import(867, function($data, $info) {
-
-	$percent = $info->commission->saleCommissionVariable;
-	$value = $data->price * ($percent / 100);
-
-	return array(
-		'uid' 			=> 'tt_' . $data->identifier,
-		'action' 		=> 'sell',
-		'provider_id' 	=> 2,
-		'title' 		=> $data->name,
-		'description' 	=> $data->description,
-		'uri' 			=> $data->productURL,
-		'image' 		=> $data->imageURL,
-		'value' 		=> $value,
-		'currency' 		=> 'EUR',
-	);
-
-});
+//
+//// Afvalemmershop
+//$importer->import(2626, function($data, $info) {
+//
+//	$percent = $info->commission->saleCommissionVariable;
+//	$value = $data->price * ($percent / 100);
+//
+//	return array(
+//		'uid' 			=> 'tt_' . $data->identifier,
+//		'action' 		=> 'sell',
+//		'provider_id' 	=> 2,
+//		'title' 		=> $data->name,
+//		'description' 	=> $data->description . PHP_EOL . $data->additional[10]->value,
+//		'uri' 			=> $data->productURL,
+//		'image' 		=> $data->imageURL,
+//		'value' 		=> $value,
+//		'currency' 		=> 'EUR',
+//	);
+//
+//});
+//
+//// Bestelkado.nl
+//$importer->import(867, function($data, $info) {
+//
+//	$percent = $info->commission->saleCommissionVariable;
+//	$value = $data->price * ($percent / 100);
+//
+//	return array(
+//		'uid' 			=> 'tt_' . $data->identifier,
+//		'action' 		=> 'sell',
+//		'provider_id' 	=> 2,
+//		'title' 		=> $data->name,
+//		'description' 	=> $data->description,
+//		'uri' 			=> $data->productURL,
+//		'image' 		=> $data->imageURL,
+//		'value' 		=> $value,
+//		'currency' 		=> 'EUR',
+//	);
+//
+//});
 
 // Algebeld.nl
 $importer->import(1078, function($data, $info) {
 
 	$value = $info->commission->saleCommissionFixed;
+	$title = $data->name;
+
+	foreach($data->additional as $additional) {
+
+		switch( (string) $additional->name) {
+
+			case 'brand':
+				$title = $additional->value . ' ' . $title;
+				break;
+
+		}
+	}
 
 	return array(
 		'uid' 			=> 'tt_' . $data->identifier,
 		'action' 		=> 'sell',
 		'provider_id' 	=> 2,
-		'title' 		=> $data->name,
+		'title' 		=> $title,
 		'description' 	=> $data->description,
 		'uri' 			=> $data->productURL,
 		'image' 		=> $data->imageURL,
