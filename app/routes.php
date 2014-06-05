@@ -39,80 +39,7 @@ $importer->info(function(TradeTrackerImporter $importer) {
 
 });
 
-// Afvalemmershop
-$importer->import(2626, function($data, $info) {
 
-	$percent = $info->commission->saleCommissionVariable;
-	$value = $data->price * ($percent / 100);
-
-	return array(
-		'uid' 			=> 'tt_' . $data->identifier,
-		'action' 		=> 'sell',
-		'provider_id' 	=> 2,
-		'title' 		=> $data->name,
-		'teaser' 		=> $data->description . PHP_EOL . $data->additional[10]->value,
-		'description' 	=> $data->description . PHP_EOL . $data->additional[10]->value,
-		'uri' 			=> $data->productURL,
-		'image' 		=> $data->imageURL,
-		'value' 		=> $value,
-		'currency' 		=> 'EUR',
-	);
-
-});
-
-// Bestelkado.nl
-$importer->import(867, function($data, $info) {
-
-	$percent = $info->commission->saleCommissionVariable;
-	$value = $data->price * ($percent / 100);
-
-	return array(
-		'uid' 			=> 'tt_' . $data->identifier,
-		'action' 		=> 'sell',
-		'provider_id' 	=> 2,
-		'title' 		=> $data->name,
-		'teaser' 		=> $data->description,
-		'description' 	=> $data->description,
-		'uri' 			=> $data->productURL,
-		'image' 		=> $data->imageURL,
-		'value' 		=> $value,
-		'currency' 		=> 'EUR',
-	);
-
-});
-
-// Algebeld.nl
-$importer->import(1078, function($data, $info) {
-
-	$value = $info->commission->saleCommissionFixed;
-
-	$row = array(
-		'uid' 			=> 'tt_' . $data->identifier,
-		'action' 		=> 'sell',
-		'provider_id' 	=> 2,
-		'title' 		=> $data->name,
-		'teaser' 		=> $data->description,
-		'description' 	=> $data->description,
-		'uri' 			=> $data->productURL,
-		'image' 		=> $data->imageURL,
-		'value' 		=> $value,
-		'currency' 		=> 'EUR',
-	);
-
-	foreach($data->additional as $additional) {
-
-		switch( (string) $additional->name) {
-
-			case 'brand':
-				$row['title'] = (string) $additional->value . ' ' . $row['title'];
-				break;
-
-		}
-	}
-
-	return $row;
-
-});
 
 // Handle all the campaign feeds
 $importer->feed(function($campaignID) {
@@ -155,19 +82,124 @@ $importer->feed(function($campaignID) {
 
 
 
-Route::get('/', function()
+Route::get('/import/2626', function()
 {
+	// Afvalemmershop
+	App::make('TradeTrackerImporter')->import(2626, function($data, $info) {
+
+		dd($data);
+
+		$percent = $info->commission->saleCommissionVariable;
+		$value = $data->price * ($percent / 100);
+
+		return array(
+			'campaign_id' 	=> 2626,
+			'uid' 			=> 'tt_' . $data->identifier,
+			'action' 		=> 'sell',
+			'provider_id' 	=> 2,
+			'title' 		=> $data->name,
+			'teaser' 		=> $data->description . PHP_EOL . $data->additional[10]->value,
+//		'description' 	=> $data->description . PHP_EOL . $data->additional[10]->value, // Tekst scrap
+			'uri' 			=> $data->productURL,
+			'image' 		=> $data->imageURL,
+			'value' 		=> $value,
+			'currency' 		=> 'EUR',
+		);
+
+	});
+
 	// Load all feeds
 	App::make('TradeTrackerImporter')->run();
 
-	return Redirect::to('export');
+	return Redirect::to('/');
+});
+
+
+Route::get('/import/867', function()
+{
+	// Bestelkado.nl
+	App::make('TradeTrackerImporter')->import(867, function($data, $info) {
+
+		$percent = $info->commission->saleCommissionVariable;
+		$value = $data->price * ($percent / 100);
+
+		return array(
+			'campaign_id' 	=> 867,
+			'uid' 			=> 'tt_' . $data->identifier,
+			'action' 		=> 'sell',
+			'provider_id' 	=> 2,
+			'title' 		=> $data->name,
+			'teaser' 		=> $data->description,
+			'description' 	=> $data->description,
+			'uri' 			=> $data->productURL,
+			'image' 		=> $data->imageURL,
+			'value' 		=> $value,
+			'currency' 		=> 'EUR',
+		);
+
+	});
+
+	// Load all feeds
+	App::make('TradeTrackerImporter')->run();
+
+	return Redirect::to('/');
+});
+
+
+Route::get('/import/1078', function()
+{
+	// Algebeld.nl
+	App::make('TradeTrackerImporter')->import(1078, function($data, $info) {
+
+		$value = $info->commission->saleCommissionFixed;
+
+		$row = array(
+			'campaign_id' 	=> 1078,
+			'uid' 			=> 'tt_' . $data->identifier,
+			'action' 		=> 'sell',
+			'provider_id' 	=> 2,
+			'title' 		=> $data->name,
+			'teaser' 		=> $data->description,
+			'description' 	=> $data->description,
+			'uri' 			=> $data->productURL,
+			'image' 		=> $data->imageURL,
+			'value' 		=> $value,
+			'currency' 		=> 'EUR',
+		);
+
+		foreach($data->additional as $additional) {
+
+			switch( (string) $additional->name) {
+
+				case 'brand':
+					$row['title'] = (string) $additional->value . ' ' . $row['title'];
+					break;
+
+			}
+		}
+
+		return $row;
+
+	});
+
+	// Load all feeds
+	App::make('TradeTrackerImporter')->run();
+
+	return Redirect::to('/');
+});
+
+
+
+Route::get('/', function()
+{
+	return View::make('import');
 });
 
 Route::get('export', function()
 {
 	$tasks = Task::where('exported', 0)->get();
 
-	foreach(array_chunk($tasks->toArray(), 1000) as $splitted) {
+	foreach(array_chunk($tasks->toArray(), 300) as $splitted) {
 
 		$client = new GuzzleHttp\Client;
 		$client->post('http://taskreward.app/api/tasks', array(
@@ -180,65 +212,34 @@ Route::get('export', function()
 
 	DB::table('tasks')->where('exported', 0)->update(array('exported' => 1));
 
-	return HTML::link('/', 'Import') . ' - ' . HTML::link('export', 'Export') . ' - ' . HTML::link('description', 'Description');
-
+	return Redirect::to('/');
 });
 
-Route::get('description', function()
+Route::get('description/2626', function()
 {
-	$tasks = Task::whereNull('description')->get();
+	$tasks = Task::where('campaign_id', 2626)->whereNull('description')->limit(50)->get();
 
 	foreach($tasks as $task) {
 
-		Scraper::add('google-shopping-search', function(Crawler $crawler) {
+		Scraper::add('afvalemmershop-product', function(Crawler $crawler) use ($task) {
 
-			$crawler->filter('h3.r a')->each(function($node) {
+			$node = $crawler->filter('.productdetail-right .omschrijving')->first();
 
-				$url = $node->attr('href');
+			$description = trim($node->html());
+			$teaser = substr($description, 0, stripos(trim($node->text()), PHP_EOL));
 
-				if(strpos($url, '/aclk?sa=') === 0) {
-					return;
-				}
-
-				$url = 'https://www.google.nl' . $url;
-
-				Scraper::scrape('google-shopping-product', $url);
-			});
-
+			$task->teaser = $teaser;
+			$task->description = $description;
+			$task->exported = 0;
+			$task->save();
 		});
 
-		Scraper::add('google-shopping-product', function(Crawler $crawler) use ($task) {
+		$id = str_replace('tt_', '', $task->uid);
+		$url = sprintf('http://www.afvalemmershop.nl/product/%s/%s', Str::slug($task->title), $id);
 
-			$crawler->filter('#product-description')->each(function($node) use ($task)  {
-
-				try {
-
-					$description = $node->filter('#product-description-full')->text();
-					$description = trim(substr($description, 0, -10));
-
-					$teaser = $node->filter('#product-description-truncated')->text();
-					$teaser = trim(substr($teaser, 0, strpos($teaser, 'function showFullDescription()')));
-
-
-					$task->teaser = $teaser;
-					$task->description = $description;
-					$task->exported = 0;
-					$task->save();
-
-				}
-				catch(Exception $e) {
-
-				}
-
-			});
-
-		});
-
-		$url = sprintf('https://www.google.nl/search?q=%s&gbv=1&tbm=shop', urlencode($task->title));
-		Scraper::scrape('google-shopping-search', $url);
+		Scraper::scrape('afvalemmershop-product', $url);
 
 	}
-
-	return Redirect::to('export');
+	return Redirect::to('/');
 });
 

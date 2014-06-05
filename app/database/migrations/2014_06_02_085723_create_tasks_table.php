@@ -16,6 +16,7 @@ class CreateTasksTable extends Migration {
 		{
 			$table->increments('id');
 			$table->timestamps();
+			$table->integer('campaign_id');
 			$table->string('uid');
 			$table->string('action');
 			$table->integer('provider_id');
@@ -29,6 +30,7 @@ class CreateTasksTable extends Migration {
 
 			$table->tinyInteger('exported');
 
+			$table->index('campaign_id');
 			$table->unique('uid');
 			$table->index('exported');
 		});
