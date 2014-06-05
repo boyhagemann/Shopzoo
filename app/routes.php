@@ -2,7 +2,7 @@
 
 use Symfony\Component\DomCrawler\Crawler;
 
-ini_set('max_execution_time', 300);
+ini_set('max_execution_time', 600);
 
 
 /*
@@ -50,6 +50,7 @@ $importer->import(2626, function($data, $info) {
 		'action' 		=> 'sell',
 		'provider_id' 	=> 2,
 		'title' 		=> $data->name,
+		'teaser' 		=> $data->description . PHP_EOL . $data->additional[10]->value,
 		'description' 	=> $data->description . PHP_EOL . $data->additional[10]->value,
 		'uri' 			=> $data->productURL,
 		'image' 		=> $data->imageURL,
@@ -70,6 +71,7 @@ $importer->import(867, function($data, $info) {
 		'action' 		=> 'sell',
 		'provider_id' 	=> 2,
 		'title' 		=> $data->name,
+		'teaser' 		=> $data->description,
 		'description' 	=> $data->description,
 		'uri' 			=> $data->productURL,
 		'image' 		=> $data->imageURL,
@@ -89,6 +91,7 @@ $importer->import(1078, function($data, $info) {
 		'action' 		=> 'sell',
 		'provider_id' 	=> 2,
 		'title' 		=> $data->name,
+		'teaser' 		=> $data->description,
 		'description' 	=> $data->description,
 		'uri' 			=> $data->productURL,
 		'image' 		=> $data->imageURL,
@@ -146,36 +149,8 @@ $importer->feed(function($campaignID) {
 
 
 
-//Scraper::add('google-shopping-search', function(Crawler $crawler) {
-//
-//	$crawler->filter('h3.r a')->each(function($node) {
-//
-//		$url = $node->attr('href');
-//
-//		if(strpos($url, '/aclk?sa=') === 0) {
-//			return;
-//		}
-//
-//		$url = 'https://www.google.nl' . $url;
-//
-//		Scraper::scrape('google-shopping-product', $url);
-//	});
-//
-//});
-//
-//Scraper::add('google-shopping-product', function(Crawler $crawler) use (&$row) {
-//
-//	$crawler->filter('#product-description-full')->each(function($node) {
-//		$description = trim($node->text());
-//
-//		$description ? $row['description'] = $description : null;
-//	});
-//
-//});
-//
-//$url = sprintf('https://www.google.nl/search?q=%s&gbv=1&tbm=shop', urlencode($row['title']));
-//
-//Scraper::scrape('google-shopping-search', $url);
+
+
 
 
 
@@ -203,5 +178,67 @@ Route::get('export', function()
 
 	}
 
-	return 'exported';
+	DB::table('tasks')->where('exported', 0)->update(array('exported' => 1));
+
+	return HTML::link('/', 'Import') . ' - ' . HTML::link('export', 'Export') . ' - ' . HTML::link('description', 'Description');
+
 });
+
+Route::get('description', function()
+{
+	$tasks = Task::whereNull('description')->get();
+
+	foreach($tasks as $task) {
+
+		Scraper::add('google-shopping-search', function(Crawler $crawler) {
+
+			$crawler->filter('h3.r a')->each(function($node) {
+
+				$url = $node->attr('href');
+
+				if(strpos($url, '/aclk?sa=') === 0) {
+					return;
+				}
+
+				$url = 'https://www.google.nl' . $url;
+
+				Scraper::scrape('google-shopping-product', $url);
+			});
+
+		});
+
+		Scraper::add('google-shopping-product', function(Crawler $crawler) use ($task) {
+
+			$crawler->filter('#product-description')->each(function($node) use ($task)  {
+
+				try {
+
+					$description = $node->filter('#product-description-full')->text();
+					$description = trim(substr($description, 0, -10));
+
+					$teaser = $node->filter('#product-description-truncated')->text();
+					$teaser = trim(substr($teaser, 0, strpos($teaser, 'function showFullDescription()')));
+
+
+					$task->teaser = $teaser;
+					$task->description = $description;
+					$task->exported = 0;
+					$task->save();
+
+				}
+				catch(Exception $e) {
+
+				}
+
+			});
+
+		});
+
+		$url = sprintf('https://www.google.nl/search?q=%s&gbv=1&tbm=shop', urlencode($task->title));
+		Scraper::scrape('google-shopping-search', $url);
+
+	}
+
+	return Redirect::to('export');
+});
+

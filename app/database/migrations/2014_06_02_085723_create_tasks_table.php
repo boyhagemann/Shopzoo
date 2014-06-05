@@ -20,6 +20,7 @@ class CreateTasksTable extends Migration {
 			$table->string('action');
 			$table->integer('provider_id');
 			$table->string('title');
+			$table->text('teaser')->nullable();
 			$table->text('description')->nullable();
 			$table->string('uri');
 			$table->string('image')->nullable();
