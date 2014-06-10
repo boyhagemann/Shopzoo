@@ -27,6 +27,7 @@ class CreateTasksTable extends Migration {
 			$table->string('image')->nullable();
 			$table->float('value');
 			$table->string('currency');
+			$table->longText('data')->nullable();
 
 			$table->tinyInteger('exported');
 

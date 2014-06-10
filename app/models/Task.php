@@ -14,4 +14,18 @@ class Task extends Eloquent {
 	 */
 	protected $table = 'tasks';
 
+	/**
+	 * @param $data
+	 * @return array
+	 */
+	public function getDataAttribute($data)
+	{
+		return (array) json_decode($data, true);
+	}
+
+	public function setDataAttribute(Array $data)
+	{
+		$this->attributes['data'] = json_encode($data);
+	}
+
 }

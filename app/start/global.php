@@ -67,6 +67,71 @@ App::down(function()
 	return Response::make("Be right back!", 503);
 });
 
+
+
+
+
+use Symfony\Component\DomCrawler\Crawler;
+
+ini_set('max_execution_time', 600);
+
+
+App::singleton('TradeTrackerImporter', function() {
+
+	$client = new SoapClient('http://ws.tradetracker.com/soap/affiliate?wsdl');
+	$client->authenticate($_ENV['TRADETRACKER_USER'], $_ENV['TRADETRACKER_KEY']);
+
+	return new TradeTrackerImporter($client);
+});
+
+
+$importer = App::make('TradeTrackerImporter');
+
+// Get the info from all campaigns with the Shopzoo account on TradeTracker
+$importer->info(function(TradeTrackerImporter $importer) {
+
+	$campaigns = $importer->getClient()->getCampaigns(48216, array(
+		'assignmentStatus' => 'accepted',
+	));
+
+	foreach($campaigns as $campaign) {
+		$importer->setInfo($campaign->ID, $campaign->info);
+	}
+
+});
+
+
+
+// Handle all the campaign feeds
+$importer->feed(function($campaignID) {
+
+	Queue::push(function($job) use ($campaignID)
+	{
+		// Get an instance of the importer
+		$importer = App::make('TradeTrackerImporter');
+
+		// Get all products with this campaign
+		$products = $importer->getClient()->getFeedProducts(48216, compact('campaignID'));
+
+		// Handle each product
+		foreach($products as $product) {
+
+			// Call the function that handles the product
+			$data = $importer->process($campaignID, $product);
+
+			// Save the task locally
+			Task::unguard();
+			$task = Task::firstOrNew(array('uid' => $data['uid']));
+			$task->fill($data);
+			$task->save();
+		}
+
+		$job->delete();
+	});
+
+});
+
+
 /*
 |--------------------------------------------------------------------------
 | Require The Filters File
@@ -80,3 +145,4 @@ App::down(function()
 
 require app_path().'/filters.php';
 require app_path().'/imports.php';
+require app_path().'/events.php';
