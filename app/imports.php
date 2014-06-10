@@ -48,7 +48,7 @@ Route::get('/import/867', function()
 			'provider_id' 	=> 2,
 			'title' 		=> $data->name,
 			'teaser' 		=> $data->description,
-			'description' 	=> $data->description,
+			'description' 	=> null,
 			'uri' 			=> $data->productURL,
 			'image' 		=> $data->imageURL,
 			'value' 		=> $value,

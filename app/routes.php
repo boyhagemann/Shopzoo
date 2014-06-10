@@ -27,6 +27,10 @@ Route::get('enrich', function()
 		Event::fire('task.enrich', array($task));
 	}
 
+	if(Task::whereNull('description')->count()) {
+//		return Redirect::to('enrich');
+	}
+
 	return Redirect::to('/');
 });
 
