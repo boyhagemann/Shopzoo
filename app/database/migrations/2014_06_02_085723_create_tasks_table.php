@@ -23,7 +23,7 @@ class CreateTasksTable extends Migration {
 			$table->string('title');
 			$table->text('teaser')->nullable();
 			$table->text('description')->nullable();
-			$table->string('uri');
+			$table->text('uri');
 			$table->string('image')->nullable();
 			$table->float('value');
 			$table->string('currency');

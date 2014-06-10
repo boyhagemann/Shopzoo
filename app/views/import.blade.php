@@ -7,3 +7,4 @@
 <h3>Data</h3>
 <li>{{ HTML::link('enrich', 'Enrich') }}</li>
 <li>{{ HTML::link('export', 'Export') }}</li>
+<li>{{ HTML::link('clicks', 'Clicks') }}</li>

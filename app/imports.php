@@ -9,6 +9,9 @@ Route::get('/import/2626', function()
 		$percent = $info->commission->saleCommissionVariable;
 		$value = $data->price * ($percent / 100);
 
+
+		$uri = str_replace('?c=', '?r=[token]&c=', $data->productURL);
+
 		return array(
 			'campaign_id' 	=> 2626,
 			'uid' 			=> 'tt_2626_' . $data->identifier,
@@ -16,8 +19,8 @@ Route::get('/import/2626', function()
 			'provider_id' 	=> 2,
 			'title' 		=> $data->name,
 			'teaser' 		=> $data->description . PHP_EOL . $data->additional[10]->value,
-//		'description' 	=> $data->description . PHP_EOL . $data->additional[10]->value, // Tekst scrap
-			'uri' 			=> $data->productURL,
+//		'description' 	=> $data->description . PHP_EOL . $data->additional[10]->value, // Tekst scrape
+			'uri' 			=> $uri,
 			'image' 		=> $data->imageURL,
 			'value' 		=> $value,
 			'currency' 		=> 'EUR',
@@ -41,6 +44,8 @@ Route::get('/import/867', function()
 		$percent = $info->commission->saleCommissionVariable;
 		$value = $data->price * ($percent / 100);
 
+		$uri = str_replace('?c=', '?r=[token]&c=', $data->productURL);
+
 		return array(
 			'campaign_id' 	=> 867,
 			'uid' 			=> 'tt_867_' . $data->identifier,
@@ -49,7 +54,7 @@ Route::get('/import/867', function()
 			'title' 		=> $data->name,
 			'teaser' 		=> $data->description,
 			'description' 	=> null,
-			'uri' 			=> $data->productURL,
+			'uri' 			=> $uri,
 			'image' 		=> $data->imageURL,
 			'value' 		=> $value,
 			'currency' 		=> 'EUR',
@@ -72,6 +77,8 @@ Route::get('/import/1078', function()
 
 		$value = $info->commission->saleCommissionFixed;
 
+		$uri = str_replace('?c=', '?r=[token]&c=', $data->productURL);
+
 		$row = array(
 			'campaign_id' 	=> 1078,
 			'uid' 			=> 'tt_1078_' . $data->identifier,
@@ -80,7 +87,7 @@ Route::get('/import/1078', function()
 			'title' 		=> $data->name,
 			'teaser' 		=> $data->description,
 			'description' 	=> $data->description,
-			'uri' 			=> $data->productURL,
+			'uri' 			=> $uri,
 			'image' 		=> $data->imageURL,
 			'value' 		=> $value,
 			'currency' 		=> 'EUR',

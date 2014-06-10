@@ -28,7 +28,7 @@ Route::get('enrich', function()
 	}
 
 	if(Task::whereNull('description')->count()) {
-//		return Redirect::to('enrich');
+		return Redirect::to('enrich');
 	}
 
 	return Redirect::to('/');
@@ -52,4 +52,32 @@ Route::get('export', function()
 	DB::table('tasks')->where('exported', 0)->update(array('exported' => 1));
 
 	return Redirect::to('/');
+});
+
+Route::get('clicks', function() {
+
+	$client = App::make('TradeTrackerImporter')->getClient();
+	$transactions = $client->getClickTransactions(48216);
+
+	foreach($transactions as $transaction) {
+
+		if(!$transaction->reference) {
+			continue;
+		}
+
+		$batch[] = array(
+			'uid' => 'tt_' . $transaction->ID,
+			'token' => $transaction->reference,
+			'value' => $transaction->commission,
+			'currency' => $transaction->currency,
+		);
+	}
+
+	$client = new GuzzleHttp\Client;
+	$client->post('http://taskreward.app/api/rewards', array(
+		'body' => compact('batch'),
+	));
+
+	return Redirect::to('/');
+
 });
