@@ -40,7 +40,7 @@ Route::get('export', function()
 
 	foreach(array_chunk($tasks->toArray(), 300) as $splitted) {
 
-        $uri = Config::get('services.taskreward.uri') . '/api/rewards';
+        $uri = Config::get('services.taskreward.uri') . '/api/tasks';
 		$client = new GuzzleHttp\Client;
 		$client->post($uri, array(
 			'body' => array(
