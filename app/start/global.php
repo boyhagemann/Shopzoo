@@ -71,8 +71,6 @@ App::down(function()
 
 
 
-use Symfony\Component\DomCrawler\Crawler;
-
 ini_set('max_execution_time', 600);
 
 
@@ -102,32 +100,11 @@ $importer->info(function(TradeTrackerImporter $importer) {
 
 
 
+
 // Handle all the campaign feeds
 $importer->feed(function($campaignID) {
 
-	Queue::push(function($job) use ($campaignID)
-	{
-		// Get an instance of the importer
-		$importer = App::make('TradeTrackerImporter');
-
-		// Get all products with this campaign
-		$products = $importer->getClient()->getFeedProducts(48216, compact('campaignID'));
-
-		// Handle each product
-		foreach($products as $product) {
-
-			// Call the function that handles the product
-			$data = $importer->process($campaignID, $product);
-
-			// Save the task locally
-			Task::unguard();
-			$task = Task::firstOrNew(array('uid' => $data['uid']));
-			$task->fill($data);
-			$task->save();
-		}
-
-		$job->delete();
-	});
+    Queue::push('ProcessFeedJob', compact('campaignID'));
 
 });
 

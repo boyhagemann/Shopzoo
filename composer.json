@@ -5,7 +5,7 @@
 	"license": "MIT",
 	"require": {
 		"laravel/framework": "4.2.*",
-		"pda/pheanstalk": "dev-master",
+		"pda/pheanstalk": "~2.0",
 		"guzzlehttp/guzzle": "4.*",
 		"boyhagemann/scrape": "dev-master"
 	},
@@ -15,6 +15,7 @@
 			"app/controllers",
 			"app/models",
 			"app/importers",
+			"app/jobs",
 			"app/database/migrations",
 			"app/database/seeds",
 			"app/tests/TestCase.php"

@@ -19,6 +19,15 @@ Route::get('/', function()
 });
 
 
+Route::get('/import/{id}', function($id)
+{
+    // Load all feeds
+    App::make('TradeTrackerImporter')->run($id);
+
+    return Redirect::to('/');
+});
+
+
 Route::get('enrich', function()
 {
 	$tasks = Task::whereNull('description')->limit(20)->get();

@@ -118,8 +118,12 @@ class TradeTrackerImporter
 	 * each product.
 	 *
 	 */
-	public function run()
+	public function run($id = null)
 	{
+        if($id) {
+            return call_user_func_array($this->feed, array($id));
+        }
+
 		foreach(array_keys($this->imports) as $id) {
 			call_user_func_array($this->feed, array($id));
 		}
