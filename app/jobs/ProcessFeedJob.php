@@ -2,13 +2,22 @@
 
 use Illuminate\Queue\Jobs\Job;
 
+/**
+ * Class ProcessFeedJob
+ */
 class ProcessFeedJob
 {
-    public function fire(Job $job, $payload)
+    /**
+     * @param Job $job
+     * @param array $payload
+     */
+    public function fire(Job $job, Array $payload)
     {
         // Get an instance of the importer
         $importer = App::make('TradeTrackerImporter');
 
+        // This is the target campaign. From this campaign we need the
+        // products to import them in a different job.
         $campaignId = $payload['campaignID'];
 
         // Get all products with this campaign
@@ -25,9 +34,12 @@ class ProcessFeedJob
                 break;
             }
 
+            // For each product, process it in a different job
             Queue::push('ProcessProductJob', compact('campaignId', 'product'));
-
         }
+
+        // See how much memory is used.
+        Log::info(sprintf('Memory used: %s', memory_get_usage(true)));
 
         $job->delete();
     }
