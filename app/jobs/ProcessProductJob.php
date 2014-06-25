@@ -25,6 +25,8 @@ class ProcessProductJob
         $task->fill($data);
         $task->save();
 
+        Event::fire('task.enrich', array($task));
+
         $job->delete();
     }
 }
