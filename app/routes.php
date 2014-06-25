@@ -45,50 +45,14 @@ Route::get('enrich', function()
 
 Route::get('export', function()
 {
-	$tasks = Task::where('exported', 0)->get();
-
-	foreach(array_chunk($tasks->toArray(), 300) as $splitted) {
-
-        $uri = Config::get('services.taskreward.uri') . '/api/tasks';
-		$client = new GuzzleHttp\Client;
-		$client->post($uri, array(
-			'body' => array(
-				'tasks' => $splitted,
-			),
-		));
-
-	}
-
-	DB::table('tasks')->where('exported', 0)->update(array('exported' => 1));
+    Queue::push('ExportTasks');
 
 	return Redirect::to('/');
 });
 
-Route::get('clicks', function() {
+Route::get('clicks', function()
+{
+    Queue::push('ExportTradeTrackerClicks');
 
-	$client = App::make('TradeTrackerImporter')->getClient();
-	$transactions = $client->getClickTransactions(48216);
-
-	foreach($transactions as $transaction) {
-
-		if(!$transaction->reference) {
-			continue;
-		}
-
-		$batch[] = array(
-			'uid' => 'tt_' . $transaction->ID,
-			'token' => $transaction->reference,
-			'value' => $transaction->commission,
-			'currency' => $transaction->currency,
-		);
-	}
-
-    $uri = Config::get('services.taskreward.uri') . '/api/rewards';
-	$client = new GuzzleHttp\Client;
-	$client->post($uri, array(
-		'body' => compact('batch'),
-	));
-
-	return Redirect::to('/');
-
+    return Redirect::to('/');
 });
