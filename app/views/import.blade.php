@@ -16,3 +16,6 @@
     Get the clicks registered from the affiliate parties and export them to the taskreward application.
     <br>{{ HTML::link('clicks', 'Export clicks') }}
 </p>
+
+<h4>Queue</h4>
+<li>Jobs in queue: {{ $stats['current-jobs-ready'] }}</li>

@@ -15,7 +15,10 @@
 
 Route::get('/', function()
 {
-	return View::make('import');
+    $queue = new Pheanstalk_Pheanstalk('localhost');
+    $stats = $queue->stats();
+
+	return View::make('import', compact('stats'));
 });
 
 
