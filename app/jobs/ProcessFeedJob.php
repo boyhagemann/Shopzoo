@@ -22,7 +22,7 @@ class ProcessFeedJob
         $campaignId = $payload['campaignID'];
 
         // Get all products with this campaign
-        $products = $importer->getClient()->getFeedProducts(48216, $campaignId);
+        $products = $importer->getClient()->getFeedProducts(48216, $payload);
 
         // Handle each product
         foreach($products as $product) {

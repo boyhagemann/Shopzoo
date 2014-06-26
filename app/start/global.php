@@ -71,9 +71,6 @@ App::down(function()
 
 
 
-ini_set('max_execution_time', 600);
-
-
 App::singleton('TradeTrackerImporter', function() {
 
 	$client = new SoapClient('http://ws.tradetracker.com/soap/affiliate?wsdl');
@@ -81,12 +78,8 @@ App::singleton('TradeTrackerImporter', function() {
 	return new TradeTrackerImporter($client);
 });
 
-
-$importer = App::make('TradeTrackerImporter');
-
-
 // Handle all the campaign feeds
-$importer->feed(function($campaignID) {
+App::make('TradeTrackerImporter')->feed(function($campaignID) {
 
     Queue::push('ProcessFeedJob', compact('campaignID'));
 
