@@ -46,7 +46,18 @@ Route::get('/import/{id?}', function($id = null)
 
 Route::get('export', function()
 {
-    Queue::push('ExportTasks');
+    // We need to manually build the queue here, because we need to set
+    // a custom priority
+    $payload = json_encode(array(
+        'job' => 'ExportTasks',
+        'data' => array(),
+    ));
+
+    Queue::getPheanstalk()->useTube('default')->put(
+        $payload,
+        Pheanstalk_PheanstalkInterface::DEFAULT_PRIORITY - 500,
+        Pheanstalk_PheanstalkInterface::DEFAULT_DELAY
+    );
 
 	return Redirect::to('/')
         ->withSuccess('The tasks are now queued for export');

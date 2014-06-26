@@ -5,3 +5,12 @@ body {
 h4 {
     margin-top: 30px;
 }
+
+.badge-danger {
+    background-color: #d9534f;
+}
+
+h2 .badge {
+    vertical-align: text-top;
+    font-size: 11px;
+}

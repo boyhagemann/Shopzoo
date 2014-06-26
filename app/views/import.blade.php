@@ -57,16 +57,14 @@
 
         </div>
 
-        @if($ready)
-
         <div class="col-lg-12">
 
             <hr>
 
-            <h2>Queue</h2>
 
-            <p>Jobs in queue: {{ $stats['current-jobs-ready'] }}</p>
-            <p>{{ HTML::link('delete', 'Delete all jobs', ['class' => 'btn btn-danger']) }}</p>
+            @if($ready)
+
+            <h2>Queue <span class="badge badge-danger">{{ $stats['current-jobs-ready'] }}</span></h2>
 
             <h4>Next job</h4>
             <section>
@@ -76,9 +74,16 @@
             </section>
 
 
+            @else
+
+            <h2>Queue <span class="badge">0</span></h2>
+
+            <p>There are no jobs on the queue</p>
+
+            @endif
+
         </div>
 
-        @endif
 
     </div>
 
