@@ -1,6 +1,8 @@
 ## Shopzoo
 Data provider implementation for the [TaskReward] (/boyhagemann/taskreward) application.
 
+![Example screen] (/screen.png)
+
 ### Requirements
 - Laravel Homestead with Beanstalkd installed
 

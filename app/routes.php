@@ -31,43 +31,31 @@ Route::get('/', function()
 Route::get('info', function() {
 
     Queue::push('ImportTradeTrackerCampaignInfo');
-    return Redirect::to('/')->withSuccess('Info queued for update');
+    return Redirect::to('/')
+        ->withSuccess('The campaign info is now queued for update');
 });
 
-Route::get('/import/{id}', function($id)
+Route::get('/import/{id?}', function($id = null)
 {
     // Load all feeds
     App::make('TradeTrackerImporter')->run($id);
 
-    return Redirect::to('/');
-});
-
-
-Route::get('enrich', function()
-{
-	$tasks = Task::whereNull('description')->limit(20)->get();
-
-	foreach($tasks as $task) {
-		Event::fire('task.enrich', array($task));
-	}
-
-	if(Task::whereNull('description')->count()) {
-		return Redirect::to('enrich');
-	}
-
-	return Redirect::to('/');
+    return Redirect::to('/')
+        ->withSuccess('The product feed is now queued for import');
 });
 
 Route::get('export', function()
 {
     Queue::push('ExportTasks');
 
-	return Redirect::to('/');
+	return Redirect::to('/')
+        ->withSuccess('The tasks are now queued for export');
 });
 
 Route::get('clicks', function()
 {
-    Queue::push('ExportTradeTrackerClicks');
+    Queue::push('ExportTradeTrackerClicks')
+        ->withSuccess('The clicks are now queued for export');
 
     return Redirect::to('/');
 });
@@ -86,5 +74,6 @@ Route::get('delete', function()
     }
     catch(\Pheanstalk_Exception_ServerException $e){}
 
-    return Redirect::to('/');
+    return Redirect::to('/')
+        ->withSuccess('All queued jobs are deleted succesfully');
 });

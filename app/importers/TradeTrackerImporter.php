@@ -35,7 +35,7 @@ class TradeTrackerImporter
 		return $this->client;
 	}
 
-    protected function auth()
+    public function auth()
     {
         $this->getClient()->authenticate($_ENV['TRADETRACKER_USER'], $_ENV['TRADETRACKER_KEY']);
     }
@@ -83,8 +83,6 @@ class TradeTrackerImporter
 	 */
 	public function run($id = null)
 	{
-        $this->auth();
-
         if($id) {
             return call_user_func_array($this->feed, array($id));
         }

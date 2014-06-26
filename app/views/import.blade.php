@@ -16,7 +16,7 @@
         <div class="alert alert-success">{{{ Session::get('success') }}}</div>
         @endif
 
-        <div class="col-lg-3">
+        <div class="col-lg-6">
 
             <h2>Import</h2>
             <p>All the imports will create seperate queued jobs in the background.</p>
@@ -27,13 +27,14 @@
 
             <h4>Product feeds</h4>
             <p>Import the product feeds for these campaigns.</p>
+            <p>{{ HTML::link('import', 'Import all campaigns', ['class' => 'btn btn-warning btn-sm']) }}</p>
             <p>{{ HTML::link('import/2626', 'Afvalemmershop.nl', ['class' => 'btn btn-default btn-sm']) }}</p>
             <p>{{ HTML::link('import/867', 'Bestelkado.nl', ['class' => 'btn btn-default btn-sm']) }}</p>
             <p>{{ HTML::link('import/1078', 'Algebeld.nl', ['class' => 'btn btn-default btn-sm']) }}</p>
 
         </div>
 
-        <div class="col-lg-3">
+        <div class="col-lg-6">
 
             <h2>Export</h2>
             <p>This will export the data to the taskreward application</p>
@@ -43,7 +44,7 @@
                 Export all tasks that are ready.
             </p>
             <p>
-                {{ HTML::link('export', 'Export', ['class' => 'btn btn-primary']) }}
+                {{ HTML::link('export', 'Export', ['class' => 'btn btn-primary btn-sm']) }}
             </p>
 
             <h4>Clicks</h4>
@@ -51,31 +52,33 @@
                 Get the clicks registered from the affiliate parties and export them to the taskreward application.
             </p>
             <p>
-                {{ HTML::link('clicks', 'Export clicks', ['class' => 'btn btn-primary']) }}
+                {{ HTML::link('clicks', 'Export clicks', ['class' => 'btn btn-primary btn-sm']) }}
             </p>
 
         </div>
 
-        <div class="col-lg-6">
+        @if($ready)
+
+        <div class="col-lg-12">
+
+            <hr>
 
             <h2>Queue</h2>
 
-            <h4>Stats</h4>
-            <ul>
-                <li>Jobs in queue: {{ $stats['current-jobs-ready'] }}</li>
-            </ul>
+            <p>Jobs in queue: {{ $stats['current-jobs-ready'] }}</p>
             <p>{{ HTML::link('delete', 'Delete all jobs', ['class' => 'btn btn-danger']) }}</p>
 
-            @if($ready)
             <h4>Next job</h4>
-            <section style="width: 400px;">
+            <section>
                 <pre style=" display: table-cell; white-space: pre-line; padding: 10px">
                     <strong>{{ $ready->getId() }}</strong> {{ trim($ready->getData()) }}
                 </pre>
             </section>
-            @endif
+
 
         </div>
+
+        @endif
 
     </div>
 

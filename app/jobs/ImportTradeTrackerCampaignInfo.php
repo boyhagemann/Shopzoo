@@ -14,6 +14,7 @@ class ImportTradeTrackerCampaignInfo
     {
         // Get an instance of the importer
         $importer = App::make('TradeTrackerImporter');
+        $importer->auth();
 
         $campaigns = $importer->getClient()->getCampaigns(48216, array(
             'assignmentStatus' => 'accepted',

@@ -15,6 +15,7 @@ class ProcessFeedJob
     {
         // Get an instance of the importer
         $importer = App::make('TradeTrackerImporter');
+        $importer->auth();
 
         // This is the target campaign. From this campaign we need the
         // products to import them in a different job.
