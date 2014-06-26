@@ -18,16 +18,6 @@ class TradeTrackerImporter
 	protected $client;
 
 	/**
-	 * @var array
-	 */
-	protected $info = array();
-
-	/**
-	 * @var Closure
-	 */
-	protected $infoCallback;
-
-	/**
 	 * @param SoapClient $client
 	 */
 	public function __construct(SoapClient $client)
@@ -45,36 +35,10 @@ class TradeTrackerImporter
 		return $this->client;
 	}
 
-	/**
-	 * @param $id
-	 * @return mixed|null
-	 */
-	public function getInfo($id)
-	{
-		if(!$this->info) {
-			call_user_func_array($this->infoCallback, array($this));
-		}
-
-		return $this->info[$id];
-	}
-
-	/**
-	 * @param $id
-	 * @param $info
-	 */
-	public function setInfo($id, $info)
-	{
-		$this->info[$id] = $info;
-	}
-
-	/**
-	 * @param $id
-	 * @param $info
-	 */
-	public function info(Closure $callback)
-	{
-		$this->infoCallback = $callback;
-	}
+    protected function auth()
+    {
+        $this->getClient()->authenticate($_ENV['TRADETRACKER_USER'], $_ENV['TRADETRACKER_KEY']);
+    }
 
 	/**
 	 * Get all products from the feed and process them individually
@@ -109,8 +73,7 @@ class TradeTrackerImporter
 	public function process($id, $data)
 	{
 		$import = $this->imports[$id];
-		$info = $this->getInfo($id);
-		return call_user_func_array($import, array($data, $info));
+		return call_user_func_array($import, array($data));
 	}
 
 	/**
@@ -120,6 +83,8 @@ class TradeTrackerImporter
 	 */
 	public function run($id = null)
 	{
+        $this->auth();
+
         if($id) {
             return call_user_func_array($this->feed, array($id));
         }

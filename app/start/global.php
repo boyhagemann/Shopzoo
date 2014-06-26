@@ -77,28 +77,12 @@ ini_set('max_execution_time', 600);
 App::singleton('TradeTrackerImporter', function() {
 
 	$client = new SoapClient('http://ws.tradetracker.com/soap/affiliate?wsdl');
-	$client->authenticate($_ENV['TRADETRACKER_USER'], $_ENV['TRADETRACKER_KEY']);
 
 	return new TradeTrackerImporter($client);
 });
 
 
 $importer = App::make('TradeTrackerImporter');
-
-// Get the info from all campaigns with the Shopzoo account on TradeTracker
-$importer->info(function(TradeTrackerImporter $importer) {
-
-	$campaigns = $importer->getClient()->getCampaigns(48216, array(
-		'assignmentStatus' => 'accepted',
-	));
-
-	foreach($campaigns as $campaign) {
-		$importer->setInfo($campaign->ID, $campaign->info);
-	}
-
-});
-
-
 
 
 // Handle all the campaign feeds

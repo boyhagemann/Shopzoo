@@ -28,6 +28,11 @@ Route::get('/', function()
 	return View::make('import', compact('stats', 'ready'));
 });
 
+Route::get('info', function() {
+
+    Queue::push('ImportTradeTrackerCampaignInfo');
+    return Redirect::to('/');
+});
 
 Route::get('/import/{id}', function($id)
 {

@@ -2,10 +2,11 @@
 
 
 // Afvalemmershop
-App::make('TradeTrackerImporter')->import(2626, function(Array $data, $info) {
+App::make('TradeTrackerImporter')->import(2626, function(Array $data) {
 
-    $percent = $info->commission->saleCommissionVariable;
-    $value = $data['price'] * ($percent / 100);
+    $campaign = Campaign::findBySourceAndId('tradetracker', 2626);
+
+    $value = $data['price'] * ($campaign->sales_percentage / 100);
 
     $uri = str_replace('?c=', '?r=[token]&c=', $data['productURL']);
 
@@ -26,10 +27,11 @@ App::make('TradeTrackerImporter')->import(2626, function(Array $data, $info) {
 });
 
 // Bestelkado.nl
-App::make('TradeTrackerImporter')->import(867, function(Array $data, $info) {
+App::make('TradeTrackerImporter')->import(867, function(Array $data) {
 
-    $percent = $info->commission->saleCommissionVariable;
-    $value = $data['price'] * ($percent / 100);
+    $campaign = Campaign::findBySourceAndId('tradetracker', 867);
+
+    $value = $data['price'] * ($campaign->sales_percentage / 100);
 
     $uri = str_replace('?c=', '?r=[token]&c=', $data['productURL']);
 
@@ -51,9 +53,10 @@ App::make('TradeTrackerImporter')->import(867, function(Array $data, $info) {
 
 
 // Algebeld.nl
-App::make('TradeTrackerImporter')->import(1078, function(Array $data, $info) {
+App::make('TradeTrackerImporter')->import(1078, function(Array $data) {
 
-    $value = $info->commission->saleCommissionFixed;
+    $campaign = Campaign::findBySourceAndId('tradetracker', 1078);
+    $value = $campaign->sales_value;
 
     $uri = str_replace('?c=', '?r=[token]&c=', $data['productURL']);
 

@@ -1,6 +1,7 @@
 
 <h3>Import</h3>
 <p>All the imports will create seperate queued jobs in the background.</p>
+<li>{{ HTML::link('info', 'Campaign info') }}</li>
 <li>{{ HTML::link('import/2626', 'Afvalemmershop.nl') }}</li>
 <li>{{ HTML::link('import/867', 'Bestelkado.nl') }}</li>
 <li>{{ HTML::link('import/1078', 'Algebeld.nl') }}</li>
