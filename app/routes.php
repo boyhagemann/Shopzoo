@@ -31,7 +31,7 @@ Route::get('/', function()
 Route::get('info', function() {
 
     Queue::push('ImportTradeTrackerCampaignInfo');
-    return Redirect::to('/');
+    return Redirect::to('/')->withSuccess('Info queued for update');
 });
 
 Route::get('/import/{id}', function($id)

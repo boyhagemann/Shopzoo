@@ -13,6 +13,15 @@ Data provider implementation for the [TaskReward] (/boyhagemann/taskreward) appl
 ### How to use
 Navigate to the Shopzoo homepage to perform different tasks.
 
+### Strategy
+- [Cron: 5 minutes] Import campaign information for all campaigns.
+- [Cron: daily] Import product feeds
+- [Cron: 5 minutes] Export tasks
+
+When campaign information is changed, an event is triggered that will update all existing task data.
+This will recalculate the lead and sales rewards for each task that belongs to the updated campaign.
+This way the product information stays in sync with the exported tasks.
+
 ### Environment variables
 There are a few environment variables that needs to be present:
 * TRADETRACKER_USER : the client id
