@@ -23,16 +23,8 @@ class ProcessFeedJob
         // Get all products with this campaign
         $products = $importer->getClient()->getFeedProducts(48216, $campaignId);
 
-        $i = 0;
-
         // Handle each product
         foreach($products as $product) {
-
-            $i++;
-
-            if($i >= 5) {
-                break;
-            }
 
             // For each product, process it in a different job
             Queue::push('ProcessProductJob', compact('campaignId', 'product'));

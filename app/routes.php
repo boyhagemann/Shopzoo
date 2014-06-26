@@ -17,8 +17,9 @@ Route::get('/', function()
 {
     $queue = new Pheanstalk_Pheanstalk('localhost');
     $stats = $queue->stats();
+    $ready = $queue->peekReady();
 
-	return View::make('import', compact('stats'));
+	return View::make('import', compact('stats', 'ready'));
 });
 
 
@@ -56,6 +57,23 @@ Route::get('export', function()
 Route::get('clicks', function()
 {
     Queue::push('ExportTradeTrackerClicks');
+
+    return Redirect::to('/');
+});
+
+
+Route::get('delete', function()
+{
+    $queue = new Pheanstalk_Pheanstalk('localhost');
+
+    try
+    {
+        while($job = $queue->peekReady('default'))
+        {
+            $queue->delete($job);
+        }
+    }
+    catch(\Pheanstalk_Exception_ServerException $e){}
 
     return Redirect::to('/');
 });
