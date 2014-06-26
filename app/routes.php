@@ -17,7 +17,13 @@ Route::get('/', function()
 {
     $queue = new Pheanstalk_Pheanstalk('localhost');
     $stats = $queue->stats();
-    $ready = $queue->peekReady();
+
+    try {
+        $ready = $queue->peekReady();
+    }
+    catch(Pheanstalk_Exception_ServerException $e) {
+        $ready = null;
+    }
 
 	return View::make('import', compact('stats', 'ready'));
 });

@@ -21,9 +21,11 @@
 <li>Jobs in queue: {{ $stats['current-jobs-ready'] }}</li>
 <li>{{ HTML::link('delete', 'Delete all jobs') }}</li>
 
+@if($ready)
 <h4>Nex job</h4>
 <section style="width: 400px;">
     <pre style=" display: table-cell; white-space: pre-line; padding: 10px">
         <strong>{{ $ready->getId() }}</strong> {{ trim($ready->getData()) }}
     </pre>
 </section>
+@endif
