@@ -69,6 +69,7 @@
 
                 <p>{{ HTML::link(Config::get('services.taskreward.homepage'), 'Go to TaskReward', ['target' => '_blank']) }}</p>
                 <hr>
+                <p>{{ HTML::link('quick/ready', 'Mark all tasks as ready') }}</p>
                 <p>{{ HTML::link('quick/refresh', 'Refresh database') }}</p>
 
             </div>
