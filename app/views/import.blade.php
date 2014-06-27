@@ -20,13 +20,6 @@
         </div>
         @endif
 
-
-        <div class="row">
-            <p class="text-right">
-                <a href="{{ Config::get('services.taskreward.homepage') }}" target="_blank">Go to TaskReward</a>
-            </p>
-        </div>
-
         <div class="row">
 
             <div class="col-lg-5">
@@ -74,6 +67,8 @@
 
                 <h2>Quick</h2>
 
+                <p>{{ HTML::link(Config::get('services.taskreward.homepage'), 'Go to TaskReward', ['target' => '_blank']) }}</p>
+                <hr>
                 <p>{{ HTML::link('quick/refresh', 'Refresh database') }}</p>
 
             </div>
