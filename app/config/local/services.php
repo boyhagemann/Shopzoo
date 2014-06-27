@@ -15,6 +15,7 @@ return array(
 	*/
     'taskreward' => array(
         'uri'  => 'http://taskreward.app',
+        'homepage'  => 'http://taskreward.app:8000',
     ),
 
 );

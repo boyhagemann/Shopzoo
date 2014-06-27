@@ -30,6 +30,7 @@ return array(
 
     'taskreward' => array(
         'uri'  => 'http://taskreward-forge.no-ip.org',
+        'homepage'  => 'http://taskreward-forge.no-ip.org',
     ),
 
 );

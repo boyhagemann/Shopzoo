@@ -12,7 +12,6 @@
 
     <div class="container">
 
-
         @if(Session::has('success'))
         <div class="row">
             <div class="col-lg-12">
@@ -20,6 +19,13 @@
             </div>
         </div>
         @endif
+
+
+        <div class="row">
+            <p class="text-right">
+                <a href="{{ Config::get('services.taskreward.homepage') }}" target="_blank">Go to TaskReward</a>
+            </p>
+        </div>
 
         <div class="row">
 
@@ -101,38 +107,29 @@
 
                 @endif
 
-            </div>
+                @if($failed->count())
 
-        </div>
-
-        @if($failed->count())
-        <div class="row">
-
-            <div class="col-lg-12">
-
-                <hr>
-
-                <h2>Failed jobs</h2>
+                <h4>Failed jobs</h4>
 
                 <table class="table">
-                @foreach($failed as $job)
+                    @foreach($failed as $job)
                     <tr>
                         <td>{{ $job->failed_at }}</td>
                         <td>{{ $job->connection }}</td>
                         <td>{{ $job->queue }}</td>
                         <td><pre>{{ $job->payload }}</pre></td>
                     </tr>
-                @endforeach
+                    @endforeach
                 </table>
 
                 {{ $failed->links() }}
 
-                {{ HTML::link('quick/refresh', 'Refresh database', ['class' => 'btn btn-danger btn-sm']) }}
 
+                @endif
             </div>
 
         </div>
-        @endif
+
     </div>
 
 
