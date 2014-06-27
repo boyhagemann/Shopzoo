@@ -80,6 +80,9 @@ Route::get('delete', function()
 
 Route::get('quick/refresh', function() {
 
+    // Hack to enable migrations without errors
+    define('STDIN',fopen("php://stdin","r"));
+
     Artisan::call('migrate:refresh');
 
     return Redirect::to('/') ->withSuccess('The database is now empty');
