@@ -88,3 +88,10 @@ Route::get('quick/refresh', function() {
 
     return Redirect::to('/') ->withSuccess('The database is now empty');
 });
+
+Route::get('quick/ready', function() {
+
+    Task::where('exported', 1)->update(['exported' => 0]);
+
+    return Redirect::to('/') ->withSuccess('All tasks are now ready to be exported');
+});
