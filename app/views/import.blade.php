@@ -123,6 +123,15 @@
 
 
                 @endif
+
+
+
+
+                <h2>Last logs</h2>
+                @foreach($logs as $log)
+                <li>{{ $log }}</li>
+                @endforeach
+
             </div>
 
         </div>
