@@ -25,7 +25,7 @@ Route::get('/', function()
         $ready = null;
     }
 
-    $failed = FailedJob::paginate(10);
+    $failed = FailedJob::orderBy('failed_at', 'DESC')->paginate(10);
 
 	return View::make('import', compact('stats', 'ready', 'failed'));
 });
@@ -94,4 +94,11 @@ Route::get('quick/ready', function() {
     Task::where('exported', 1)->update(['exported' => 0]);
 
     return Redirect::to('/') ->withSuccess('All tasks are now ready to be exported');
+});
+
+Route::get('quick/clear-failed-job', function() {
+
+    DB::table('failed_jobs')->delete();
+
+    return Redirect::to('/') ->withSuccess('All failed jobs are cleared');
 });
