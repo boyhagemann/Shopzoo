@@ -116,3 +116,10 @@ Route::get('quick/clear-failed-job', function() {
 
     return Redirect::to('/') ->withSuccess('All failed jobs are cleared');
 });
+
+Route::get('quick/clear-log-files', function() {
+
+    File::cleanDirectory(storage_path('logs'));
+
+    return Redirect::to('/') ->withSuccess('All log files removed');
+});
