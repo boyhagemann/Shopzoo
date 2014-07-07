@@ -31,9 +31,6 @@ class ProcessFeedJob
             Queue::push('ProcessProductJob', compact('campaignId', 'product'));
         }
 
-        // See how much memory is used.
-        Log::info(sprintf('Memory used: %s', memory_get_usage(true)));
-
         $job->delete();
     }
 }
