@@ -129,9 +129,16 @@
 
 
                 <h2>Last logs</h2>
-                @foreach($logs as $log)
-                <li>{{ $log }}</li>
-                @endforeach
+                <table class="table">
+                    @foreach($logs as $log)
+                    <tr>
+                        <td>{{ $log->created_at }}</td>
+                        <td>{{ $log->level }}</td>
+                        <td>{{ $log->message }}</td>
+                        <td>{{ $log->context }}</td>
+                    </tr>
+                    @endforeach
+                </table>
 
             </div>
 

@@ -17,21 +17,7 @@ Route::get('/', function()
 {
     $queue = new Pheanstalk_Pheanstalk('localhost');
     $stats = $queue->stats();
-    $logs = array();
-
-    $pattern = "/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\].*/";
-    $files = File::glob(storage_path('**/*.log'));
-    foreach($files as $file) {
-        $body = File::get($file);
-
-        preg_match_all($pattern, $body, $matches);
-
-        $headings = $matches[0];
-        rsort($headings);
-
-        $collection = Illuminate\Support\Collection::make($headings);
-        $logs = $collection->take(10);
-    }
+    $logs = LogEvent::orderBy('created_at', 'DESC')->paginate(10);
 
     try {
         $ready = $queue->peekReady();
