@@ -72,6 +72,7 @@
                 <p>{{ HTML::link('quick/ready', 'Mark all tasks as ready') }}</p>
                 <p>{{ HTML::link('quick/refresh', 'Refresh database') }}</p>
                 <p>{{ HTML::link('quick/clear-failed-job', 'Clear failed jobs log') }}</p>
+                <p>{{ HTML::link('quick/clear-log-files', 'Clear log files') }}</p>
 
             </div>
 
