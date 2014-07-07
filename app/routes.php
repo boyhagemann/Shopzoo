@@ -62,7 +62,7 @@ Route::get('clicks', function()
 });
 
 
-Route::get('delete', function()
+Route::get('quick/clear-queue', function()
 {
     $queue = new Pheanstalk_Pheanstalk('localhost');
 
