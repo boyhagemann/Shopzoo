@@ -15,6 +15,8 @@
 
 Route::get('/', function()
 {
+//    Event::fire('task.enrich', array(Task::find(34)));
+
     $queue = new Pheanstalk_Pheanstalk('localhost');
     $stats = $queue->stats();
     $logs = LogEvent::orderBy('created_at', 'DESC')->paginate(10);

@@ -67,10 +67,11 @@
 
                 <h2>Quick</h2>
 
-                <p>{{ HTML::link(Config::get('services.taskreward.homepage'), 'Go to TaskReward', ['target' => '_blank']) }}</p>
-                <hr>
-                <p>{{ HTML::link('quick/clear-queue', 'Delete queue items') }}</p>
+                <p>{{ HTML::link(Config::get('services.taskreward.homepage'), 'Go to TaskReward', ['target' => '_blank', 'class' => 'btn btn-default']) }}</p>
                 <p>{{ HTML::link('quick/ready', 'Mark all tasks as ready') }}</p>
+
+                <h4>Clean up</h4>
+                <p>{{ HTML::link('quick/clear-queue', 'Delete queue items') }}</p>
                 <p>{{ HTML::link('quick/refresh', 'Refresh database') }}</p>
                 <p>{{ HTML::link('quick/clear-failed-job', 'Clear failed jobs log') }}</p>
                 <p>{{ HTML::link('quick/clear-log-files', 'Clear log files') }}</p>
