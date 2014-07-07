@@ -17,6 +17,7 @@ Route::get('/', function()
 {
     $queue = new Pheanstalk_Pheanstalk('localhost');
     $stats = $queue->stats();
+    $logs = array();
 
     $pattern = "/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\].*/";
     $files = File::glob(storage_path('**/*.log'));
