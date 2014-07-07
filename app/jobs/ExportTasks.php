@@ -12,12 +12,6 @@ class ExportTasks
      */
     public function fire(Job $job)
     {
-        $this->execute();
-        $job->delete();
-    }
-
-    public function execute()
-    {
         // Get all tasks that needs to be exported
         $tasks = Task::where('exported', 0)->get();
 
@@ -34,11 +28,23 @@ class ExportTasks
                 ),
             ));
 
-            Log::info('Task export response', json_decode($response->getBody(), true));
+
+            $result = json_decode($response->getBody(), true);
+            foreach($result as $export) {
+                if(!$export['success']) {
+                    Log::error('Task export failed', $export);
+                }
+            }
         }
 
         // All tasks are exported, flag it.
         DB::table('tasks')->where('exported', 0)->update(array('exported' => 1));
+
+        $job->delete();
+    }
+
+    public function execute()
+    {
 
     }
 }
